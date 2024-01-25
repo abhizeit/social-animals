@@ -43,6 +43,7 @@ model User {
   accounts          Account[]
   sessions          Session[]
   VerificationToken VerificationToken[]
+  Comment           Comment[]
 }
 
 model VerificationToken {
@@ -53,10 +54,11 @@ model VerificationToken {
   user       User     @relation(fields: [identifier], references: [id])
 }
 
-model Events {
-  id                 String @id @default(auto()) @map("_id") @db.ObjectId
-  name               String
-  lat                String
-  long               String
-  application_status String
+model Comment {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  comment  String
+  userId   String   @db.ObjectId
+  postedOn DateTime
+
+  user User @relation(fields: [userId], references: [id])
 }
