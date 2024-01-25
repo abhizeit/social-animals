@@ -1,5 +1,4 @@
 import { getServerSession } from "next-auth";
-import { signOut } from "next-auth/react";
 import { redirect } from "next/navigation";
 
 export default async function Dashboard() {
@@ -9,7 +8,9 @@ export default async function Dashboard() {
   }
   return (
     <>
-      <h1>This is DashBoard for {session.user.email}</h1>
+      <div className="h-screen pt-10 px-20 bg-gray-700">
+        <h1>This is DashBoard for {session.user.email}</h1>
+      </div>
     </>
   );
 }
