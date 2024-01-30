@@ -3,29 +3,60 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "./ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, LogOutIcon, User } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function Navbar() {
   const { data: session } = useSession();
+  console.log(session);
   return (
-    <div className=" h-10 flex flex-row  flex-wrap justify-between align-middle  top-0  backdrop-filter backdrop-blur-sm z-50 absolute w-screen px-20">
+    <div className="  flex flex-row    top-0  backdrop-filter backdrop-blur-sm z-50 sticky items-center px-20 justify-between">
       <div>
-        <h1 className="text-2xl text-white font-semibold">Anonymously</h1>
+        <Link href={"/"}>
+          <h1 className="text-2xl text-white font-semibold">
+            Social Animals 🐵
+          </h1>
+        </Link>
       </div>
       {!session ? (
         <div>
-          <Button asChild variant="default">
+          <Button asChild className="my-3" size={"sm"}>
             <Link href="/api/auth/signin">Log In</Link>
           </Button>
         </div>
       ) : (
-        <button
-          onClick={() => {
-            signOut();
-          }}
-        >
-          <LogOut color="white" size={20} />
-        </button>
+        <Popover>
+          <PopoverTrigger className="flex flex-row gap-2">
+            <User /> {session?.user?.email}
+          </PopoverTrigger>
+          <PopoverContent className="flex flex-col  gap-2 border-gray-700 w-auto px-2">
+            <Button
+              asChild
+              variant={"ghost"}
+              size={"sm"}
+              className="text-gray-400 hover:text-white "
+            >
+              <Link href="/profile" className="flex flex-row gap-2">
+                <User color="gray" size={20} />
+                <a>Profile</a>
+              </Link>
+            </Button>
+
+            <Button
+              size={"sm"}
+              variant={"ghost"}
+              onClick={() => signOut()}
+              className="text-gray-400 hover:text-white gap-2 px-0 "
+            >
+              <LogOutIcon color="gray" size={20} />
+              Logout
+            </Button>
+          </PopoverContent>
+        </Popover>
       )}
     </div>
   );

@@ -2,24 +2,18 @@ import { db } from "@/db";
 import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { FormEvent } from "react";
+import CommentList from "./comment-list";
+import { authOptions } from "@/lib/auth-options";
+import { Suspense } from "react";
+import { Loader2, RotateCw } from "lucide-react";
 
 export default async function Dashboard() {
-
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   if (!session || !session.user || !session.user.email) {
     redirect("/api/auth/signin");
   }
-  
-  const res = await fetch("http://localhost:8080/api/posts/");
-  const comments: {
-    id: string;
-    comment: string;
-    userId: string;
-    postedOn: Date;
-  }[] = await res.json();
 
-  async function addComment(formData: FormData) {
+  async function addComment(formData: FormData, userId: string) {
     "use server";
     await db.comment.create({
       data: {
@@ -37,19 +31,17 @@ export default async function Dashboard() {
 
   return (
     <>
-      <div className="h-screen pt-10 px-20 bg-gray-700">
+      <div className="h-screen pt-10 px-20">
         <h1>This is DashBoard for {session.user.email}</h1>
-        <div>
-          <form action={addComment}>
-            <input type="text" name="comment" />
-            <button type="submit">Submit</button>
-          </form>
-        </div>
-        <div>
-          {comments?.map((c) => (
-            <li key={c.id}>{c.comment}</li>
-          ))}
-        </div>
+        <Suspense
+          fallback={
+            <div className="h-4/5 items-center justify-center w-full flex">
+              <Loader2 className="h-20 w-20 animate-spin" />
+            </div>
+          }
+        >
+          <CommentList />
+        </Suspense>
       </div>
     </>
   );

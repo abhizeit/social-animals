@@ -1,12 +1,19 @@
 import { db } from "@/db";
-import { getServerSession } from "next-auth";
-import { json } from "stream/consumers";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth-options";
 
-export async function GET(request: Request) {
+import { getServerSession } from "next-auth/next";
+import { NextRequest } from "next/server";
+
+export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
-  console.log(session);
-  const comments = await db.comment.findMany();
+  if (!session) {
+    return new Response("not logged in");
+  }
+  const comments = await db.comment.findMany({
+    include: {
+      user: true,
+    },
+  });
   return new Response(JSON.stringify(comments));
 }
 
@@ -18,7 +25,7 @@ export async function POST(request: Request) {
       postedOn: new Date(),
       user: {
         connect: {
-          id: "65b2c603bfed17c98012bf4e", // Replace with the actual User ID
+          id: "65b2c603bfed17c98012bf4e",
         },
       },
     },

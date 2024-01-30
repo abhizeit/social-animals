@@ -1,19 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Quicksand } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { getServerSession } from "next-auth";
 import SessionProvider from "@/components/SessionProvider";
-import { authOptions } from "./api/auth/[...nextauth]/route";
-
-import { Inter as FontSans } from "next/font/google";
 
 import { cn } from "@/lib/utils";
+import { authOptions } from "@/lib/auth-options";
+import { ThemeProvider } from "@/components/theme-provider";
 
-export const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
+const quicksand = Quicksand({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -28,16 +24,18 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
   return (
     <html lang="en">
-      <body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
-        )}
-      >
-        <SessionProvider session={session}>
-          <Navbar />
-          {children}
-        </SessionProvider>
+      <body className={quicksand.className}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SessionProvider session={session}>
+            <Navbar />
+            {children}
+          </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
