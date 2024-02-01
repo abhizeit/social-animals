@@ -1,11 +1,12 @@
-import { db } from "@/db";
+import { db } from "@/server/db";
 import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import CommentList from "./comment-list";
-import { authOptions } from "@/lib/auth-options";
+
 import { Suspense } from "react";
 import { Loader2, RotateCw } from "lucide-react";
+import { authOptions } from "@/server/auth";
 
 export default async function Dashboard() {
   const session = await getServerSession(authOptions);

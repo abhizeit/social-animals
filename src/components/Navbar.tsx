@@ -12,7 +12,6 @@ import {
 
 export default function Navbar() {
   const { data: session } = useSession();
-  console.log(session);
   return (
     <div className="  flex flex-row    top-0  backdrop-filter backdrop-blur-sm z-50 sticky items-center px-20 justify-between">
       <div>

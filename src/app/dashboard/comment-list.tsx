@@ -1,9 +1,9 @@
-import { db } from "@/db";
-import { authOptions } from "@/lib/auth-options";
+import { db } from "@/server/db";
 import { getServerSession } from "next-auth";
 
 import { redirect } from "next/navigation";
 import CommentCard from "./comment-card";
+import { authOptions } from "@/server/auth";
 
 async function getComments() {
   try {
@@ -20,7 +20,6 @@ async function getComments() {
 
 export default async function CommentList() {
   const comments = await getComments();
-  console.log(comments);
 
   return (
     <div className="flex flex-row gap-5 flex-wrap justify-center">

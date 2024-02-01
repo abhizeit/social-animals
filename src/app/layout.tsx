@@ -4,10 +4,9 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { getServerSession } from "next-auth";
 import SessionProvider from "@/components/SessionProvider";
-
-import { cn } from "@/lib/utils";
-import { authOptions } from "@/lib/auth-options";
 import { ThemeProvider } from "@/components/theme-provider";
+import { authOptions } from "@/server/auth";
+
 
 const quicksand = Quicksand({ subsets: ["latin"] });
 

@@ -1,8 +1,8 @@
-import { db } from "@/db";
-import { authOptions } from "@/lib/auth-options";
+import { db } from "@/server/db";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import UserCommentCard from "./user-comment-card";
+import { authOptions } from "@/server/auth";
 
 async function getDbUser(email: string) {
   return await db.user.findFirst({

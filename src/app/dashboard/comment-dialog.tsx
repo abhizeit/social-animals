@@ -9,7 +9,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { db } from "@/db";
+import { db } from "@/server/db";
+
 import { revalidatePath } from "next/cache";
 
 export default function CommentDialog({ userId }: { userId: string }) {
