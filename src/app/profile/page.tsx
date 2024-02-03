@@ -46,7 +46,7 @@ export default async function Page() {
         <ProfileLinkCopyButton
           uri={`https://localhost:8080/profile/${user?.id}`}
         />
-      </div> 
+      </div>
       <div>
         <Link href={`/profile/${user?.id}`}>put a comment</Link>
         {comments?.map((c) => (
