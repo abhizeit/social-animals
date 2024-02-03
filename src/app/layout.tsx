@@ -6,7 +6,7 @@ import { getServerSession } from "next-auth";
 import SessionProvider from "@/components/SessionProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { authOptions } from "@/server/auth";
-
+import { Toaster } from "@/components/ui/toaster";
 
 const quicksand = Quicksand({ subsets: ["latin"] });
 
@@ -35,6 +35,7 @@ export default async function RootLayout({
             {children}
           </SessionProvider>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );
