@@ -44,7 +44,7 @@ export default async function Page() {
           Hey, {session?.user?.name}{" "}
         </h1>
         <ProfileLinkCopyButton
-          uri={`https://localhost:8080/profile/${user?.id}`}
+          uri={`https://social-animals-abhizeit.vercel.app/${user?.id}`}
         />
       </div>
       <div>
