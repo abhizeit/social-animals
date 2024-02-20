@@ -11,7 +11,14 @@ async function getComments() {
     if (!session) {
       redirect("/api/auth/signin");
     }
-    const comments = await db.comment.findMany({});
+    const comments = await db.comment.findMany({
+      where: {
+        archived: false,
+        user: {
+          active: true,
+        },
+      },
+    });
     return comments;
   } catch (e) {
     console.log(e);

@@ -14,4 +14,20 @@ export const authOptions = {
   session: {
     strategy: "database",
   },
+  callbacks: {
+    async signIn({ user }) {
+      const dbUser = await db.user.findUnique({
+        where: { email: user?.email as string },
+      });
+      if (dbUser && dbUser.active == false) {
+        await db.user.update({
+          where: { email: dbUser?.email as string },
+          data: {
+            active: true,
+          },
+        });
+      }
+      return true;
+    },
+  },
 } satisfies NextAuthOptions;

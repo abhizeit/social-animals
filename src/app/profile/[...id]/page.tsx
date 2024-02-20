@@ -1,36 +1,21 @@
 import { db } from "@/server/db";
-import { revalidatePath } from "next/cache";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import CommentForm from "./comment-form";
+import { notFound } from "next/navigation";
 
-export default function Page({ params }: { params: { id: string } }) {
-  async function addComment(formData: FormData) {
-    "use server";
-    await db.comment.create({
-      data: {
-        comment: formData.get("comment") as string,
-        postedOn: new Date(),
-        user: {
-          connect: {
-            id: `${params.id}`,
-          },
-        },
+export default async function Page({ params }: { params: { id: string } }) {
+  try {
+    const user = await db.user.findFirst({
+      where: {
+        id: `${params.id}`,
+        active: true,
       },
     });
-    revalidatePath("/profile");
+    if (!user) {
+      notFound();
+    }
+    return <CommentForm userId={`${params.id}`} />;
+  } catch (err) {
+    console.log(err);
+    notFound();
   }
-
-  return (
-    <form action={addComment}>
-      <div className="grid gap-4 py-4">
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Input name="comment" className="col-span-3" />
-        </div>
-      </div>
-
-      <Button type="submit" variant={"secondary"}>
-        Post Comment
-      </Button>
-    </form>
-  );
 }

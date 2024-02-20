@@ -15,7 +15,10 @@ const ProfileLinkCopyButton = ({ uri }: { uri: string }) => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger>
-          <div className="border-2 border-white rounded-full h-10 w-10 flex justify-center items-center animate-spin">
+          <div
+            className="border-2 border-white rounded-full h-10 w-10 flex justify-center items-center animate-spin"
+            style={{ animationDuration: "4s" }}
+          >
             <Share2
               color="white"
               onClick={() => {

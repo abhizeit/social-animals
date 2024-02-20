@@ -2,34 +2,19 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { db } from "@/server/db";
+
+import { Textarea } from "@/components/ui/textarea";
+import { addComment } from "@/lib/server-actions";
+
 
 import { revalidatePath } from "next/cache";
 
 export default function CommentDialog({ userId }: { userId: string }) {
-  async function addComment(formData: FormData) {
-    "use server";
-    await db.comment.create({
-      data: {
-        comment: formData.get("comment") as string,
-        postedOn: new Date(),
-        user: {
-          connect: {
-            id: userId, // Replace with the actual User ID
-          },
-        },
-      },
-    });
-    revalidatePath("/dashboard");
-  }
-
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -41,16 +26,20 @@ export default function CommentDialog({ userId }: { userId: string }) {
         <DialogHeader>
           <DialogTitle>What this animal has to say?</DialogTitle>
         </DialogHeader>
-        <form action={addComment}>
+        <form
+          action={async (formdata) => {
+            "use server";
+            await addComment(formdata, userId, "/dashboard");
+          }}
+        >
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Input name="comment" className="col-span-3" />
-            </div>
+            <Textarea placeholder="Type your message here." name="comment" />
           </div>
-
-          <Button type="submit" variant={"secondary"}>
-            Post Comment
-          </Button>
+          <DialogClose asChild>
+            <Button type="submit" variant={"secondary"} className="w-full">
+              Post Comment
+            </Button>
+          </DialogClose>
         </form>
       </DialogContent>
     </Dialog>

@@ -5,6 +5,7 @@ import UserCommentCard from "./user-comment-card";
 import { authOptions } from "@/server/auth";
 import Link from "next/link";
 import ProfileLinkCopyButton from "./profile-link-copy-button";
+import CommentForm from "./[...id]/comment-form";
 
 async function getDbUser(email: string | null | undefined) {
   return await db.user.findFirst({ where: { email } });
@@ -37,20 +38,26 @@ export default async function Page() {
 
   return (
     <div className="px-20 pt-10">
-      <p>hello world</p>
-      <Link href="/profile/65bbd9acabcadfa0c27aa972">put a comment</Link>
       <div className="flex items-center flex-row gap-5">
         <h1 className="text-4xl text-ellipsis font-extrabold font">
-          Hey, {session?.user?.name}{" "}
+          Hey, {session?.user?.name} 
+          <ProfileLinkCopyButton
+            uri={`https://social-animals-abhizeit.vercel.app/profile/${user?.id}`}
+          />
         </h1>
-        <ProfileLinkCopyButton
-          uri={`https://social-animals-abhizeit.vercel.app/profile/${user?.id}`}
-        />
       </div>
-      <div>
-        <Link href={`/profile/${user?.id}`}>put a comment</Link>
+      <Link className="text-2xl font-bold" href={`/profile/${user?.id}`}>
+        Add comment
+      </Link>
+      <div className="flex flex-wrap gap-5 justify-between">
         {comments?.map((c) => (
-          <UserCommentCard key={c.id} comment={c?.comment} userId={c?.userId} />
+          <UserCommentCard
+            key={c.id}
+            comment={c?.comment}
+            userId={c?.userId}
+            archived={c.archived}
+            commentId={c.id}
+          />
         ))}
       </div>
     </div>
