@@ -1,3 +1,5 @@
+"use client";
+
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { archiveComment } from "@/lib/server-actions";
@@ -18,7 +20,6 @@ export default function CommentArchiveSwitch({
         id="archive"
         checked={archived}
         onCheckedChange={async () => {
-          "use server";
           await archiveComment(userId, !archived, commentId);
         }}
       />

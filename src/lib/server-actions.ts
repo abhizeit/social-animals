@@ -22,7 +22,7 @@ export async function addComment(
     },
   });
   if (revalidationPath) {
-    revalidatePath(revalidationPath,"page");
+    revalidatePath(revalidationPath, "page");
   }
 }
 
@@ -70,4 +70,26 @@ export async function deactivateUser(userId: string) {
       userId,
     },
   });
+}
+
+export async function deleteComment(userId: string, commentId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/api/auth/signin");
+  }
+  const user = await db.user.findFirst({
+    where: {
+      email: session?.user?.email,
+    },
+  });
+  if (!user || user?.id !== userId) {
+    redirect("/");
+  } else {
+    await db.comment.delete({
+      where: {
+        id: commentId,
+      },
+    });
+    revalidatePath(`profile/${userId}`);
+  }
 }

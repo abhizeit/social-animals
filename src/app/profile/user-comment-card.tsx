@@ -1,5 +1,3 @@
-// import CommentArchiveSwitch from "./comment-archive-switch";
-
 import { Textarea } from "@/components/ui/textarea";
 import CommentArchiveSwitch from "./comment-archive-switch";
 import CommentDeleteButton from "./comment-delete-button";
