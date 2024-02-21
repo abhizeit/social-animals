@@ -22,7 +22,7 @@ export async function addComment(
     },
   });
   if (revalidationPath) {
-    revalidatePath(revalidationPath, "page");
+    revalidatePath(revalidationPath);
   }
 }
 

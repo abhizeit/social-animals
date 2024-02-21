@@ -7,7 +7,7 @@ export default function CommentForm({ userId }: { userId: string }) {
   return (
     <form
       className="w-[80%]"
-      action={(formData: FormData) => addComment(formData, userId)}
+      action={(formData: FormData) => addComment(formData, userId, "/profile")}
     >
       <div className="grid gap-5">
         <Textarea name="comment" placeholder="Add your comment here" />
