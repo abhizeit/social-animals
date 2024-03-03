@@ -17,12 +17,21 @@ export default function Home() {
           height={200}
         />
       </div>
-      <Button className="gap-3" asChild variant={"secondary"}>
-        <Link href={"/dashboard"}>
-          Dashboard
-          <MoveRight />
-        </Link>
-      </Button>
+
+      <div className="flex flex-row gap-5 justify-center items-center">
+        <Button className="gap-3" asChild variant={"secondary"}>
+          <Link href={"/dashboard"}>
+            Dashboard
+            <MoveRight />
+          </Link>
+        </Button>
+        <Button className="gap-3" asChild variant={"secondary"}>
+          <Link href={"/chat"}>
+            Chat Room
+            <MoveRight />
+          </Link>
+        </Button>
+      </div>
     </main>
   );
 }
