@@ -29,7 +29,11 @@ export default function Page() {
   };
 
   useEffect(() => {
-    const skt = io(socketServer as string);
+    const skt = io(socketServer as string, {
+      extraHeaders: {
+        "my-custom-header": "abcd",
+      },
+    });
     setSocket(skt);
 
     skt.on("server-message", (msg: string) => {
