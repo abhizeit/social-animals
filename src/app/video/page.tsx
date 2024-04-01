@@ -24,7 +24,7 @@ export default function Page() {
   const peersRef = useRef<Instance[]>([]);
 
   useEffect(() => {
-    const skt = io(socketServer as string);
+    const skt = io(`${socketServer}/video`);
 
     setSocket(skt);
 
@@ -38,21 +38,18 @@ export default function Page() {
       setRoomId(null);
     });
 
-    skt.on(
-      "user-joining-peer",
-      ({ roomId, signal: incomingSignal}) => {
-        const peer = new SimplePeer({
-          initiator: false,
-          trickle: false,
-          stream: mediaStream as MediaStream,
-        });
-        setPeerConnections((prev) => [...prev, peer]);
-        peer.on("signal", (signal) => {
-          skt.emit("returning-signal", { roomId, signal});
-        });
-        peer.signal(incomingSignal);
-      }
-    );
+    skt.on("user-joining-peer", ({ roomId, signal: incomingSignal }) => {
+      const peer = new SimplePeer({
+        initiator: false,
+        trickle: false,
+        stream: mediaStream as MediaStream,
+      });
+      setPeerConnections((prev) => [...prev, peer]);
+      peer.on("signal", (signal) => {
+        skt.emit("returning-signal", { roomId, signal });
+      });
+      peer.signal(incomingSignal);
+    });
 
     skt?.on("receiving-returned-signal", ({ signal: returned_signal }) => {
       console.log("return signal");
@@ -87,7 +84,6 @@ export default function Page() {
 
   useEffect(() => {
     if (roomId && mediaStream && socket) {
-    
       const peer = new SimplePeer({
         initiator: true,
         trickle: false,
@@ -95,7 +91,6 @@ export default function Page() {
       });
       peersRef.current.push(peer);
       peer.on("signal", (signal) => {
-        console.log(mediaStream)
         socket?.emit("peer-signal", {
           roomId,
           signal,
@@ -135,14 +130,7 @@ const Video = ({ peer }: { peer: Instance }) => {
   return (
     <div>
       <div className="border-2 border-yellow-400 h-screen">
-        <video ref={ref} autoPlay muted width={800} height={500} />
-        <Button
-          onClick={() => {
-            console.log(ref.current?.srcObject);
-          }}
-        >
-          videoref
-        </Button>
+      <video ref={ref} autoPlay muted width={640} height={480} />
       </div>
     </div>
   );

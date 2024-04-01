@@ -93,3 +93,12 @@ export async function deleteComment(userId: string, commentId: string) {
     revalidatePath(`profile/${userId}`);
   }
 }
+
+
+export async function deleteUser(userId:string) {
+  const session = await db.user.deleteMany({
+    where:{
+      id:userId
+    }
+  })
+}

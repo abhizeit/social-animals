@@ -29,16 +29,18 @@ export default function Page() {
   };
 
   useEffect(() => {
-    const skt = io(socketServer as string);
+    const skt = io(`${socketServer}/text` as string);
 
     setSocket(skt);
 
     skt.on("server-message", (msg: string) => {
+            alert("message");
       setChatMessages((prev) => [...prev, { message: msg, type: "server" }]);
       sound.play();
     });
 
     skt.on("connected", ({ partnerId, roomId }) => {
+      console.log(partnerId);
       setIsConnected(true);
       setRoomId(roomId);
     });
