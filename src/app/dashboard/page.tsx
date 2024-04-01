@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import CommentList from "./comment-list";
 
 import { Suspense } from "react";
-import { Loader2} from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { authOptions } from "@/server/auth";
 
 export default async function Dashboard() {

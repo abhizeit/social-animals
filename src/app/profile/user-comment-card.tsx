@@ -15,12 +15,7 @@ export default function UserCommentCard({
 }) {
   return (
     <div className="rounded-md border p-5 relative h-80 w-80 shadow-slate-300 hover:shadow-lg flex flex-col items-center justify-center overflow-y-auto gap-5">
-      <Textarea
-        disabled
-        value={comment}
-        rows={6}
-        className="scrollbar-none"
-      />
+      <Textarea disabled value={comment} rows={6} className="scrollbar-none" />
       <CommentArchiveSwitch
         commentId={commentId}
         userId={userId}

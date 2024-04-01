@@ -40,7 +40,7 @@ export default async function Page() {
     <div className="px-20 pt-10">
       <div className="flex items-center flex-row gap-5 mb-10">
         <h1 className="text-4xl text-ellipsis font-extrabold font">
-          Hey, {session?.user?.name} 
+          Hey, {session?.user?.name}
           <ProfileLinkCopyButton
             uri={`https://social-animals-abhizeit.vercel.app/profile/${user?.id}`}
           />

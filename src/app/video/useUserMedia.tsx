@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 
-export function useUserMedia(requestedMedia:any) {
+export function useUserMedia(requestedMedia: any) {
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
     async function enableStream() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia(requestedMedia);
+        const stream =
+          await navigator.mediaDevices.getUserMedia(requestedMedia);
         setMediaStream(stream);
-      } catch(err) {
+      } catch (err) {
         // Removed for brevity
       }
     }
@@ -17,10 +18,10 @@ export function useUserMedia(requestedMedia:any) {
       enableStream();
     } else {
       return function cleanup() {
-        mediaStream.getTracks().forEach(track => {
+        mediaStream.getTracks().forEach((track) => {
           track.stop();
         });
-      }
+      };
     }
   }, [mediaStream, requestedMedia]);
 

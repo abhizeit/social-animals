@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 export async function addComment(
   formData: FormData,
   userId: string,
-  revalidationPath?: string
+  revalidationPath?: string,
 ) {
   await db.comment.create({
     data: {
@@ -29,7 +29,7 @@ export async function addComment(
 export async function archiveComment(
   userId: string,
   archived: boolean,
-  commentId: string
+  commentId: string,
 ) {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -94,11 +94,10 @@ export async function deleteComment(userId: string, commentId: string) {
   }
 }
 
-
-export async function deleteUser(userId:string) {
+export async function deleteUser(userId: string) {
   const session = await db.user.deleteMany({
-    where:{
-      id:userId
-    }
-  })
+    where: {
+      id: userId,
+    },
+  });
 }

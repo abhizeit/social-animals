@@ -101,9 +101,7 @@ export default function Page() {
 
   return (
     <>
-      {peerConnections?.map((peer, i) => (
-        <Video key={i} peer={peer} />
-      ))}
+      {peerConnections?.map((peer, i) => <Video key={i} peer={peer} />)}
       <div>
         <div className="border-2 border-yellow-400">
           <video ref={videoRef} autoPlay muted width={640} height={480} />
@@ -130,7 +128,7 @@ const Video = ({ peer }: { peer: Instance }) => {
   return (
     <div>
       <div className="border-2 border-yellow-400 h-screen">
-      <video ref={ref} autoPlay muted width={640} height={480} />
+        <video ref={ref} autoPlay muted width={640} height={480} />
       </div>
     </div>
   );

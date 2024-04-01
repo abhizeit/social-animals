@@ -1,7 +1,6 @@
 import { authOptions } from "@/server/auth";
 import { db } from "@/server/db";
 
-
 import { getServerSession } from "next-auth/next";
 import { NextRequest } from "next/server";
 
