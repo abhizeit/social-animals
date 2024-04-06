@@ -1,2 +1,2 @@
 npx eslint src
-npx prettier write
+npx prettier --write src
