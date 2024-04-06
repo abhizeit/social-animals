@@ -34,7 +34,7 @@ export default function Page() {
     setSocket(skt);
 
     skt.on("server-message", (msg: string) => {
-      alert("message");
+             alert("message");
       setChatMessages((prev) => [...prev, { message: msg, type: "server" }]);
       sound.play();
     });
