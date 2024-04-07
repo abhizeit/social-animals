@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Move3D } from "lucide-react";
 import React, { useRef, useEffect, useState, use } from "react";
 import SimplePeer, { Instance } from "simple-peer";
-// import { Socket, io } from "socket.io-client";
+import { Socket, io } from "socket.io-client";
 import { Stream } from "stream";
 
 const socketServer = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
