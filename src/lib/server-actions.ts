@@ -4,32 +4,42 @@ import { db } from "@/server/db";
 import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { ratelimit } from "./rate-limit";
 
 export async function addComment(
   formData: FormData,
   userId: string,
-  revalidationPath?: string,
+  revalidationPath?: string
 ) {
-  await db.comment.create({
-    data: {
-      comment: formData.get("comment") as string,
-      postedOn: new Date(),
-      user: {
-        connect: {
-          id: userId,
+  const ip = headers().get("x-forwarded-for");
+  if (ratelimit) {
+    const result = await ratelimit.limit(ip as string);
+    if (result.success) {
+      await db.comment.create({
+        data: {
+          comment: formData.get("comment") as string,
+          postedOn: new Date(),
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
         },
-      },
-    },
-  });
-  if (revalidationPath) {
-    revalidatePath(revalidationPath);
+      });
+      if (revalidationPath) {
+        revalidatePath(revalidationPath);
+      }
+    }
+  } else {
+    console.log("more thane 2 comments in 2 minutes");
   }
 }
 
 export async function archiveComment(
   userId: string,
   archived: boolean,
-  commentId: string,
+  commentId: string
 ) {
   const session = await getServerSession(authOptions);
   if (!session) {
