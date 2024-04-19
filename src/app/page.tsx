@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
+
   return (
     <main className="grid items-center h-[80vh] justify-center">
       <div

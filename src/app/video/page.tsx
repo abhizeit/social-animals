@@ -1,27 +1,29 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Move3D } from "lucide-react";
 import React, { useRef, useEffect, useState, use } from "react";
 import SimplePeer, { Instance } from "simple-peer";
 import { Socket, io } from "socket.io-client";
-import { Stream } from "stream";
 
 const socketServer = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
 
 export default function Page() {
-  const videoRef2 = useRef<HTMLVideoElement>(null);
-  const [hasCameraAccess, setHasCameraAccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [isConnected, setIsConnected] = useState<boolean>(false);
-
   const videoRef = useRef<HTMLVideoElement>(null);
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 
   const [socket, setSocket] = useState<Socket>();
   const [roomId, setRoomId] = useState<string | null>(null);
   const [peerConnections, setPeerConnections] = useState<Instance[]>([]);
-  const peersRef = useRef<Instance[]>([]);
+  const myPeerRef = useRef<Instance | null>();
+
+  function createOffer(mediaStream: MediaStream) {
+    const peer = new SimplePeer({
+      initiator: true,
+      trickle: false,
+      stream: mediaStream as MediaStream,
+    });
+    myPeerRef.current = peer;
+    return peer;
+  }
 
   useEffect(() => {
     const skt = io(`${socketServer}/video`);
@@ -29,13 +31,22 @@ export default function Page() {
     setSocket(skt);
 
     skt.on("connected", ({ partnerId, roomId }) => {
-      setIsConnected(true);
       setRoomId(roomId);
     });
 
     skt.on("partner-left", () => {
-      setIsConnected(false);
+      console.log("partner left");
       setRoomId(null);
+      try {
+        peerConnections.forEach((peer) => {
+          peer.destroy();
+        });
+        setPeerConnections([]);
+        myPeerRef.current?.destroy();
+        myPeerRef.current = null;
+      } catch (e: any) {
+        console.log(e);
+      }
     });
 
     skt.on("user-joining-peer", ({ roomId, signal: incomingSignal }) => {
@@ -44,18 +55,21 @@ export default function Page() {
         trickle: false,
         stream: mediaStream as MediaStream,
       });
+      console.log(incomingSignal);
       setPeerConnections((prev) => [...prev, peer]);
+      peer.signal(incomingSignal);
       peer.on("signal", (signal) => {
+        console.log(signal);
         skt.emit("returning-signal", { roomId, signal });
       });
-      peer.signal(incomingSignal);
+      peer.on("close", () => {
+        peer.destroy();
+        setPeerConnections([]);
+      });
     });
 
     skt?.on("receiving-returned-signal", ({ signal: returned_signal }) => {
-      console.log("return signal");
-      const myPeer = peersRef.current[0];
-      console.log(myPeer);
-      myPeer.signal(returned_signal);
+      myPeerRef.current?.signal(returned_signal);
     });
 
     return () => {
@@ -69,13 +83,11 @@ export default function Page() {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: true,
         });
-        setHasCameraAccess(true);
         setMediaStream(stream);
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
       } catch (error: any) {
-        setErrorMessage(error.message);
         console.error("Error accessing camera:", error);
       }
     };
@@ -84,17 +96,17 @@ export default function Page() {
 
   useEffect(() => {
     if (roomId && mediaStream && socket) {
-      const peer = new SimplePeer({
-        initiator: true,
-        trickle: false,
-        stream: mediaStream as MediaStream,
-      });
-      peersRef.current.push(peer);
+      const peer = createOffer(mediaStream);
       peer.on("signal", (signal) => {
+        console.log("singal triggered for main peer");
+        console.log(roomId);
         socket?.emit("peer-signal", {
           roomId,
           signal,
         });
+      });
+      peer.on("close", () => {
+        peer.destroy();
       });
     }
   }, [roomId, mediaStream, socket]);

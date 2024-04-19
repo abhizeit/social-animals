@@ -6,6 +6,7 @@ import { authOptions } from "@/server/auth";
 import Link from "next/link";
 import ProfileLinkCopyButton from "./profile-link-copy-button";
 import CommentForm from "./[...id]/comment-form";
+import redis from "@/server/redis";
 
 async function getDbUser(email: string | null | undefined) {
   return await db.user.findFirst({ where: { email } });
@@ -35,6 +36,13 @@ export default async function Page() {
   }
   const user = await getDbUser(session?.user?.email);
   const comments = await getUserComments(session?.user?.email);
+
+  try {
+    const data = await redis.get("key");
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
 
   return (
     <div className="px-20 pt-10">
