@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 console.log("this is middleware");
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
-  const ip = request.headers;
+  const ip = request.headers.get("x-forwarded-for");
   console.log("realip", ip);
   return NextResponse.next();
 }
