@@ -20,6 +20,7 @@ const ProfileLinkCopyButton = ({ uri }: { uri: string }) => {
             style={{ animationDuration: "4s" }}
           >
             <Share2
+              strokeWidth={1}
               color="white"
               onClick={() => {
                 copyToClipboard(uri)

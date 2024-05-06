@@ -9,7 +9,6 @@ const socketServer = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
 export default function Page() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
-
   const [socket, setSocket] = useState<Socket>();
   const [roomId, setRoomId] = useState<string | null>(null);
   const [peerConnections, setPeerConnections] = useState<Instance[]>([]);
@@ -21,61 +20,68 @@ export default function Page() {
       trickle: false,
       stream: mediaStream as MediaStream,
     });
+    peer.on("close", () => {
+      peer.destroy();
+    });
     myPeerRef.current = peer;
     return peer;
   }
 
   useEffect(() => {
-    const skt = io(`${socketServer}/video`);
+    if (mediaStream) {
+      const skt = io(`${socketServer}/video`);
 
-    setSocket(skt);
+      setSocket(skt);
 
-    skt.on("connected", ({ partnerId, roomId }) => {
-      setRoomId(roomId);
-    });
+      skt.on("connected", ({ partnerId, roomId }) => {
+        setRoomId(roomId);
+      });
 
-    skt.on("partner-left", () => {
-      console.log("partner left");
-      setRoomId(null);
-      try {
-        peerConnections.forEach((peer) => {
-          peer.destroy();
+      skt.on("partner-left", () => {
+        console.log("partner left");
+        setRoomId(null);
+        try {
+          peerConnections.forEach((peer) => {
+            peer.destroy();
+          });
+          setPeerConnections([]);
+          myPeerRef.current?.destroy();
+          console.log("peer Destroyed");
+          myPeerRef.current = null;
+        } catch (e: any) {
+          console.log(e);
+        }
+      });
+
+      skt.on("user-joining-peer", ({ roomId, signal: incomingSignal }) => {
+        const peer = new SimplePeer({
+          initiator: false,
+          trickle: false,
+          stream: mediaStream as MediaStream,
         });
-        setPeerConnections([]);
-        myPeerRef.current?.destroy();
-        myPeerRef.current = null;
-      } catch (e: any) {
-        console.log(e);
-      }
-    });
+        console.log(incomingSignal);
+        setPeerConnections((prev) => [...prev, peer]);
+        peer.signal(incomingSignal);
+        peer.on("signal", (signal) => {
+          console.log(signal);
+          skt.emit("returning-signal", { roomId, signal });
+        });
+        peer.on("close", () => {
+          peer.destroy();
+          setPeerConnections([]);
+        });
+      });
 
-    skt.on("user-joining-peer", ({ roomId, signal: incomingSignal }) => {
-      const peer = new SimplePeer({
-        initiator: false,
-        trickle: false,
-        stream: mediaStream as MediaStream,
+      skt?.on("receiving-returned-signal", ({ signal: returned_signal }) => {
+        console.log("returned");
+        myPeerRef.current?.signal(returned_signal);
       });
-      console.log(incomingSignal);
-      setPeerConnections((prev) => [...prev, peer]);
-      peer.signal(incomingSignal);
-      peer.on("signal", (signal) => {
-        console.log(signal);
-        skt.emit("returning-signal", { roomId, signal });
-      });
-      peer.on("close", () => {
-        peer.destroy();
-        setPeerConnections([]);
-      });
-    });
-
-    skt?.on("receiving-returned-signal", ({ signal: returned_signal }) => {
-      myPeerRef.current?.signal(returned_signal);
-    });
+    }
 
     return () => {
-      skt.close();
+      socket?.close();
     };
-  }, []);
+  }, [mediaStream]);
 
   useEffect(() => {
     const getVideo = async () => {
@@ -115,9 +121,14 @@ export default function Page() {
     <>
       {peerConnections?.map((peer, i) => <Video key={i} peer={peer} />)}
       <div>
-        <div className="border-2 border-yellow-400">
-          <video ref={videoRef} autoPlay muted width={640} height={480} />
-        </div>
+        <video
+          className="m-auto"
+          ref={videoRef}
+          autoPlay
+          muted
+          width={640}
+          height={480}
+        />
       </div>
     </>
   );
@@ -139,9 +150,14 @@ const Video = ({ peer }: { peer: Instance }) => {
 
   return (
     <div>
-      <div className="border-2 border-yellow-400 h-screen">
-        <video ref={ref} autoPlay muted width={640} height={480} />
-      </div>
+      <video
+        ref={ref}
+        autoPlay
+        muted
+        width={640}
+        height={480}
+        className="m-auto"
+      />
     </div>
   );
 };

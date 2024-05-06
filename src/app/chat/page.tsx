@@ -5,6 +5,9 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import { Howl } from "howler";
+import WaitingScreen from "./waiting-screen";
+import { wrap } from "module";
+import WaitingForConnection from "./waiting-for-connection";
 
 const socketServer = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
 
@@ -33,15 +36,16 @@ export default function Page() {
 
     setSocket(skt);
 
+    skt.on("connection-succesful", (socketId: string) => {
+      setIsConnected(true);
+    });
+
     skt.on("server-message", (msg: string) => {
-      alert("message");
       setChatMessages((prev) => [...prev, { message: msg, type: "server" }]);
       sound.play();
     });
 
     skt.on("connected", ({ partnerId, roomId }) => {
-      console.log(partnerId);
-      setIsConnected(true);
       setRoomId(roomId);
     });
 
@@ -50,7 +54,6 @@ export default function Page() {
     });
 
     skt.on("partner-left", () => {
-      setIsConnected(false);
       setRoomId(null);
     });
 
@@ -64,35 +67,52 @@ export default function Page() {
       className="scrollbar-none sm:scrollbar-none lg:scrollbar-none md:scrollbar-none"
       style={{ height: "88vh" }}
     >
-      <div id="messages" className="h-5/6 overflow-y-scroll scrollbar-thin">
-        {chatMessages?.map((msg, i) => (
-          <p
-            key={i}
-            style={{
-              textAlign: msg.type == "user" ? "right" : "left",
-              border:
-                msg.type === "user" ? "0.5px solid gray" : "0.5px solid green",
-              borderRadius: "10px",
-              padding: "5px",
-              fontSize: "16px",
-              margin: "10px",
-            }}
-          >
-            {msg.message}
-          </p>
-        ))}
-      </div>
-      <div className="bottom-0 width-full z-10  p-2 backdrop-filter backdrop-blur-sm ">
-        <form
-          action={sendMessage}
-          className="flex flex-row  items-center gap-5 "
-        >
-          <Input name="message" className="border-none" />
-          <Button disabled={!isConnected} type="submit" size={"sm"}>
-            Send Message
-          </Button>
-        </form>
-      </div>
+      {!isConnected ? (
+        <WaitingForConnection />
+      ) : !roomId ? (
+        <WaitingScreen />
+      ) : (
+        <>
+          <div id="messages" className="h-5/6 overflow-y-scroll scrollbar-thin">
+            {chatMessages?.map((msg, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "grid",
+                  justifyContent: msg.type == "user" ? "right" : "left",
+                }}
+              >
+                <p
+                  style={{
+                    color: msg.type === "user" ? "#18181b" : "#FAFAFA",
+                    padding: "10px",
+                    fontSize: "14px",
+                    margin: "5px",
+                    backgroundColor:
+                      msg.type === "user" ? "#FAFAFA" : "#27272A",
+                    whiteSpace: "wrap",
+                    lineHeight: "1rem",
+                    borderRadius: "5px",
+                  }}
+                >
+                  {msg.message}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="bottom-0 width-full z-10  p-2 backdrop-filter backdrop-blur-sm ">
+            <form
+              action={sendMessage}
+              className="flex flex-row  items-center gap-5 "
+            >
+              <Input name="message" className="border-none" />
+              <Button disabled={!isConnected} type="submit" size={"sm"}>
+                Send Message
+              </Button>
+            </form>
+          </div>
+        </>
+      )}
     </div>
   );
 }
