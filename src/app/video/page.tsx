@@ -20,10 +20,23 @@ export default function Page() {
       trickle: false,
       stream: mediaStream as MediaStream,
     });
+
+    myPeerRef.current = peer;
+
+    return peer;
+  }
+
+  function createAnswer(mediaStream: MediaStream) {
+    const peer = new SimplePeer({
+      initiator: false,
+      trickle: false,
+      stream: mediaStream as MediaStream,
+    });
+
     peer.on("close", () => {
       peer.destroy();
     });
-    myPeerRef.current = peer;
+
     return peer;
   }
 
@@ -53,18 +66,12 @@ export default function Page() {
         }
       });
 
-      skt.on("user-joining-peer", ({ roomId, signal: incomingSignal }) => {
-        const peer = new SimplePeer({
-          initiator: false,
-          trickle: false,
-          stream: mediaStream as MediaStream,
-        });
-        console.log(incomingSignal);
+      skt.on("create-answer", ({ roomId, signal: incomingSignal }) => {
+        const peer = createAnswer(mediaStream);
         setPeerConnections((prev) => [...prev, peer]);
         peer.signal(incomingSignal);
         peer.on("signal", (signal) => {
-          console.log(signal);
-          skt.emit("returning-signal", { roomId, signal });
+          skt.emit("answer", { roomId, signal });
         });
         peer.on("close", () => {
           peer.destroy();
@@ -72,7 +79,7 @@ export default function Page() {
         });
       });
 
-      skt?.on("receiving-returned-signal", ({ signal: returned_signal }) => {
+      skt?.on("peer-response", ({ signal: returned_signal }) => {
         console.log("returned");
         myPeerRef.current?.signal(returned_signal);
       });
@@ -104,9 +111,7 @@ export default function Page() {
     if (roomId && mediaStream && socket) {
       const peer = createOffer(mediaStream);
       peer.on("signal", (signal) => {
-        console.log("singal triggered for main peer");
-        console.log(roomId);
-        socket?.emit("peer-signal", {
+        socket?.emit("offer", {
           roomId,
           signal,
         });
