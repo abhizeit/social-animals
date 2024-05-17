@@ -48,19 +48,6 @@ export default function Navbar() {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Button
-                size={"sm"}
-                variant={"ghost"}
-                onClick={() => {
-                  signOut();
-                }}
-                className="text-gray-400 hover:text-white gap-2 px-0 "
-              >
-                <LogOutIcon color="gray" size={20} />
-                Logout
-              </Button>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Button
                 asChild
                 variant={"ghost"}
                 size={"sm"}
@@ -70,6 +57,19 @@ export default function Navbar() {
                   <Settings color="gray" size={20} />
                   <a>settings</a>
                 </Link>
+              </Button>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Button
+                size={"sm"}
+                variant={"ghost"}
+                onClick={() => {
+                  signOut();
+                }}
+                className="text-gray-400 hover:text-white gap-2 px-0 "
+              >
+                <LogOutIcon color="gray" size={20} />
+                Logout
               </Button>
             </DropdownMenuItem>
           </DropdownMenuContent>

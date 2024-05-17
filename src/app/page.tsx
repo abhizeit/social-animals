@@ -4,12 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
-
   return (
     <main className="grid items-center h-[80vh] justify-center">
       <div
         className="animate-bounce grid items-center gap-20"
-        style={{ animationDuration: "6s" }}
+        style={{ animationDuration: "6s", justifyContent: "center" }}
       >
         <Image
           alt="social animals icon"
