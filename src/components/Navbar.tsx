@@ -13,7 +13,7 @@ import {
 export default function Navbar() {
   const { data: session } = useSession();
   return (
-    <div className="flex flex-row top-0  backdrop-filter backdrop-blur-sm z-50 sticky items-center px-10 justify-between md:px-20 py-3">
+    <div className="flex flex-row top-0  backdrop-filter backdrop-blur-sm z-10 sticky items-center px-10 justify-between md:px-20 py-3">
       <div>
         <Link href={"/"}>
           <h1 className="text-sm text-white font-semibold md:font-bold  md:text-3xl ">
