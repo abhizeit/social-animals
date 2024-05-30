@@ -10,7 +10,7 @@ import { ratelimit } from "./rate-limit";
 export async function addComment(
   formData: FormData,
   userId: string,
-  revalidationPath?: string
+  revalidationPath?: string,
 ) {
   const ip = headers().get("x-forwarded-for");
   if (ratelimit) {
@@ -39,7 +39,7 @@ export async function addComment(
 export async function archiveComment(
   userId: string,
   archived: boolean,
-  commentId: string
+  commentId: string,
 ) {
   const session = await getServerSession(authOptions);
   if (!session) {
