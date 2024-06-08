@@ -11,7 +11,7 @@ export const authOptions = {
       clientSecret: process.env.AUTH_GITHUB_SECRET ?? "",
     }),
   ],
-  secret: process.env.SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "database",
   },
