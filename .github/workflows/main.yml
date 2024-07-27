@@ -23,7 +23,7 @@ jobs:
           context: .
           push: true
           tags: abhizeit/social-animals:latest
-          args: |
+          build-args:
             AUTH_GITHUB_ID: ${{secrets.AUTH_GITHUB_ID}}
             AUTH_GITHUB_SECRET: ${{secrets.AUTH_GITHUB_SECRET}}
             NEXTAUTH_SECRET: ${{secrets.NEXTAUTH_SECRET}}
