@@ -2,17 +2,23 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FormEvent, useState } from "react";
+// import { sendMail } from "@/lib/send-mail";
+import React, { useState } from "react";
 
 const Signup = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [creds, setCreds] = useState({ email: "", password: "" });
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    // Handle form submission
-    console.log("Email:", email);
-    console.log("Password:", password);
+  const handleSubmit = (e: React.FormEvent) => {
+    // sendMail();
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    console.log(e.target.value);
+    console.log(e.target.name);
+    setCreds((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   return (
@@ -29,8 +35,8 @@ const Signup = () => {
               autoComplete="email"
               required
               className="w-full mt-2"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={creds.email}
+              onChange={handleChange}
             />
           </div>
           <div>
@@ -44,8 +50,8 @@ const Signup = () => {
               autoComplete="current-password"
               required
               className="w-full mt-2"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={creds.password}
+              onChange={handleChange}
             />
           </div>
           <div>
